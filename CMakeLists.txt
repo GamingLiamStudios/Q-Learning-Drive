@@ -38,3 +38,9 @@ if (WIN32)
     # TODO: Check MSVC Support
     target_link_libraries(${PROJECT_NAME} PRIVATE -luser32 -lgdi32 -lgdiplus -lShlwapi -lDwmapi)
 endif ()
+
+# Copy map into Build Dir
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/tracks $<TARGET_FILE_DIR:${PROJECT_NAME}>/tracks
+    DEPENDS ${PROJECT_RESOURCES})

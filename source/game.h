@@ -32,6 +32,7 @@ private:
     } _car;
 
     olc::Renderable _track;
+    int             _track_sel;
 
 public:
     Game();

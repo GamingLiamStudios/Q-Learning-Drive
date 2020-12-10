@@ -3,7 +3,7 @@
 
 Game::Game()
 {
-    sAppName = "Q-Learning";
+    sAppName = "Q-Learning-Drive";
 }
 
 bool Game::OnUserCreate()    // Called once at the start, so create things here
@@ -17,7 +17,8 @@ bool Game::OnUserCreate()    // Called once at the start, so create things here
     _car.sprite.Decal()->Update();
 
     // Load Map
-    //_track = olc::Renderable::Load("track.png");
+    _track.Load("tracks/1.png");
+    _track_sel = 0;
 
     return true;
 }
@@ -32,6 +33,26 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
         _car.mov = { 0.f, 0.f };
     }
     _car.shi = GetKey(olc::Key::SHIFT).bHeld;
+    if (GetKey(olc::Key::EQUALS).bPressed)
+    {
+        _track_sel++;
+        if (_track_sel >= 3) _track_sel--;    // Magic Number
+        _track.Load("tracks/" + std::to_string(_track_sel + 1) + ".png");
+
+        _car.pos = { WIDTH / 2, HEIGHT / 2 };
+        _car.rot = 0.0f;
+        _car.mov = { 0.f, 0.f };
+    }
+    if (GetKey(olc::Key::MINUS).bPressed)
+    {
+        _track_sel--;
+        if (_track_sel < 0) _track_sel++;
+        _track.Load("tracks/" + std::to_string(_track_sel + 1) + ".png");
+
+        _car.pos = { WIDTH / 2, HEIGHT / 2 };
+        _car.rot = 0.0f;
+        _car.mov = { 0.f, 0.f };
+    }
 
     if (GetKey(olc::Key::LEFT).bHeld) _car.rot -= rot_speed * fElapsedTime;
     if (GetKey(olc::Key::RIGHT).bHeld) _car.rot += rot_speed * fElapsedTime;
@@ -45,7 +66,7 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     if (_car.shi)
         _car.mov *= 1.f - (frict * fElapsedTime);
     else
-        _car.mov *= 1.f - (3.f * fElapsedTime);
+        _car.mov *= 1.f - (3.f * fElapsedTime);    // Magic Number
 
     if (GetKey(olc::Key::UP).bHeld || GetKey(olc::Key::W).bHeld)
         _car.mov -= accel * fElapsedTime * olc::vf2d(sin(-_car.rot), cos(_car.rot));
@@ -59,6 +80,7 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     // Move car
     _car.pos += _car.mov;
 
-    DrawRotatedDecal(_car.pos, _car.sprite.Decal(), _car.rot, { 7, 14 });    // Render car
+    DrawDecal({ 0, 0 }, _track.Decal());
+    DrawRotatedDecal(_car.pos, _car.sprite.Decal(), _car.rot, { 7, 14 });    // Magic Number
     return true;
 }

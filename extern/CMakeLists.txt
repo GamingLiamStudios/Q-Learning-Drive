@@ -1,5 +1,6 @@
 include(FetchContent)
 
+# Used for storing Q-Learning data for multiple sessions
 # Include zlib-ng
 FetchContent_Declare(
         zlib_ng
