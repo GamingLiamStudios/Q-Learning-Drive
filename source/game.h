@@ -3,9 +3,9 @@
 #define WIDTH  800
 #define HEIGHT 600
 
-constexpr float accel     = .5f;
+constexpr float accel     = 5.f;
 constexpr float frict     = .7f;
-constexpr float max_speed = .2f;
+constexpr float max_speed = 10.f;
 constexpr float rot_speed = 2;
 
 #ifdef GLS_GAME

@@ -2,14 +2,9 @@ cmake_minimum_required(VERSION 3.9)
 project(qlearn)
 
 if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX") # TODO: MSVC Support
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX")
 else()
-    if(UNIX)
-        # Not Verified to work
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -lstdc++fs -lX11 -lGL -lpthread -lpng")
-    elseif(WIN32)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static")
-    endif()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
@@ -39,3 +34,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC "source") # to allow paths rel
 target_include_directories(${PROJECT_NAME} PUBLIC ${OPENGL_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE zlib ${OPENGL_LIBRARIES})
+if (WIN32)
+    # TODO: Check MSVC Support
+    target_link_libraries(${PROJECT_NAME} PRIVATE -luser32 -lgdi32 -lgdiplus -lShlwapi -lDwmapi)
+endif ()
