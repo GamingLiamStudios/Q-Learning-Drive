@@ -31,8 +31,8 @@ private:
         olc::Renderable sprite;
     } _car;
 
-    olc::Renderable _track;
-    int             _track_sel;
+    olc::Sprite _track;
+    int         _track_sel;
 
 public:
     Game();

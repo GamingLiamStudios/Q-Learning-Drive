@@ -13,12 +13,21 @@ bool Game::OnUserCreate()    // Called once at the start, so create things here
     _car.rot = 0.0f;
     _car.mov = { 0.f, 0.f };
     _car.sprite.Create(14, 28);    // TODO: Car Texture
-    for (int i = 0; i < 14 * 28; i++) _car.sprite.Sprite()->GetData()[i] = olc::WHITE;
+    for (int i = 0; i < 14 * 28; i++) _car.sprite.Sprite()->GetData()[i] = olc::RED;
     _car.sprite.Decal()->Update();
 
+    Clear(olc::BLANK);
+
+    CreateLayer();
+    EnableLayer(1, true);
+    EnableLayer(2, true);
+
     // Load Map
-    _track.Load("tracks/1.png");
+    SetDrawTarget(1);
+    _track.LoadFromFile("tracks/1.png");
     _track_sel = 0;
+    DrawSprite({ 0, 0 }, _track);
+    SetDrawTarget(2);
 
     return true;
 }
@@ -37,7 +46,11 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     {
         _track_sel++;
         if (_track_sel >= 3) _track_sel--;    // Magic Number
-        _track.Load("tracks/" + std::to_string(_track_sel + 1) + ".png");
+        _track.LoadFromFile("tracks/" + std::to_string(_track_sel + 1) + ".png");
+
+        SetDrawTarget(1);
+        DrawSprite({ 0, 0 }, _track);
+        SetDrawTarget(2);
 
         _car.pos = { WIDTH / 2, HEIGHT / 2 };
         _car.rot = 0.0f;
@@ -47,7 +60,11 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     {
         _track_sel--;
         if (_track_sel < 0) _track_sel++;
-        _track.Load("tracks/" + std::to_string(_track_sel + 1) + ".png");
+        _track.LoadFromFile("tracks/" + std::to_string(_track_sel + 1) + ".png");
+
+        SetDrawTarget(1);
+        DrawSprite({ 0, 0 }, _track);
+        SetDrawTarget(2);
 
         _car.pos = { WIDTH / 2, HEIGHT / 2 };
         _car.rot = 0.0f;
@@ -80,7 +97,6 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     // Move car
     _car.pos += _car.mov;
 
-    DrawDecal({ 0, 0 }, _track.Decal());
     DrawRotatedDecal(_car.pos, _car.sprite.Decal(), _car.rot, { 7, 14 });    // Magic Number
     return true;
 }
