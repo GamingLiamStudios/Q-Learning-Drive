@@ -24,7 +24,6 @@ bool Game::OnUserCreate()    // Called once at the start, so create things here
 
 bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
 {
-    std::cout << std::to_string(fElapsedTime) << "\n";
     // Accept User Input
     if (GetKey(olc::Key::ESCAPE).bPressed)
     {
