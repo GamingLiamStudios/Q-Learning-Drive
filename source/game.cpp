@@ -26,21 +26,27 @@ bool Game::OnUserCreate()    // Called once at the start, so create things here
     SetDrawTarget(1);
     _track.LoadFromFile("tracks/1.png");
     _track_sel = 0;
-    DrawSprite({ 0, 0 }, _track);
+    DrawSprite({ 0, 0 }, &_track);
     SetDrawTarget(2);
+
+    reset = false;
 
     return true;
 }
 
 bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
 {
-    // Accept User Input
-    if (GetKey(olc::Key::ESCAPE).bPressed)
+    if (reset)
     {
         _car.pos = { WIDTH / 2, HEIGHT / 2 };
         _car.rot = 0.0f;
         _car.mov = { 0.f, 0.f };
+
+        reset = false;
     }
+
+    // Accept User Input
+    reset    = GetKey(olc::Key::ESCAPE).bPressed;
     _car.shi = GetKey(olc::Key::SHIFT).bHeld;
     if (GetKey(olc::Key::EQUALS).bPressed)
     {
@@ -49,12 +55,10 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
         _track.LoadFromFile("tracks/" + std::to_string(_track_sel + 1) + ".png");
 
         SetDrawTarget(1);
-        DrawSprite({ 0, 0 }, _track);
+        DrawSprite({ 0, 0 }, &_track);
         SetDrawTarget(2);
 
-        _car.pos = { WIDTH / 2, HEIGHT / 2 };
-        _car.rot = 0.0f;
-        _car.mov = { 0.f, 0.f };
+        reset = true;
     }
     if (GetKey(olc::Key::MINUS).bPressed)
     {
@@ -63,12 +67,10 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
         _track.LoadFromFile("tracks/" + std::to_string(_track_sel + 1) + ".png");
 
         SetDrawTarget(1);
-        DrawSprite({ 0, 0 }, _track);
+        DrawSprite({ 0, 0 }, &_track);
         SetDrawTarget(2);
 
-        _car.pos = { WIDTH / 2, HEIGHT / 2 };
-        _car.rot = 0.0f;
-        _car.mov = { 0.f, 0.f };
+        reset = true;
     }
 
     if (GetKey(olc::Key::LEFT).bHeld) _car.rot -= rot_speed * fElapsedTime;

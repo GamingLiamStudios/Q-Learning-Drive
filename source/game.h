@@ -4,7 +4,7 @@
 #define HEIGHT 600
 
 constexpr float accel     = 5.f;
-constexpr float frict     = .7f;
+constexpr float frict     = 1.3f;
 constexpr float max_speed = 10.f;
 constexpr float rot_speed = 2;
 
@@ -33,6 +33,8 @@ private:
 
     olc::Sprite _track;
     int         _track_sel;
+
+    bool reset;
 
 public:
     Game();
