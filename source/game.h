@@ -11,9 +11,13 @@ constexpr float rot_speed = 2;
 #ifdef GLS_GAME
 #define OLC_IMAGE_STB
 #define OLC_PGE_APPLICATION
+#define OLC_PGEX_GRAPHICS2D
 #undef GLS_GAME
 #endif
 #include "olcPixelGameEngine.h"
+#include "olcPGEX_Graphics2D.h"
+
+#include <fstream>
 
 class Game : public olc::PixelGameEngine
 {
@@ -28,11 +32,14 @@ private:
         olc::vf2d mov;
         bool      shi;
 
-        olc::Renderable sprite;
+        // Render
+        olc::Sprite *           sprite;
+        olc::GFX2D::Transform2D transform;
     } _car;
 
-    olc::Sprite _track;
-    int         _track_sel;
+    olc::Sprite            _track;
+    int                    _track_sel;
+    std::vector<olc::vf2d> _track_start;
 
     bool reset;
 

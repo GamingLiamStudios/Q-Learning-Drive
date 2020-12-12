@@ -8,26 +8,35 @@ Game::Game()
 
 bool Game::OnUserCreate()    // Called once at the start, so create things here
 {
-    // Initalize Car
-    _car.pos = { WIDTH / 2, HEIGHT / 2 };
-    _car.rot = 0.0f;
-    _car.mov = { 0.f, 0.f };
-    _car.sprite.Create(14, 28);    // TODO: Car Texture
-    for (int i = 0; i < 14 * 28; i++) _car.sprite.Sprite()->GetData()[i] = olc::RED;
-    _car.sprite.Decal()->Update();
-
-    Clear(olc::BLANK);
-
-    CreateLayer();
+    // Init layers
+    while (GetLayers().size() < 2) CreateLayer();
     EnableLayer(1, true);
-    EnableLayer(2, true);
+
+    // Load Starting Positions
+    int  x, y;
+    auto _start_file = std::ifstream("tracks/start.txt");
+    while (_start_file)
+    {
+        _start_file >> x;
+        _start_file >> y;
+        _track_start.push_back(olc::vf2d(x, y));
+    }
+    _start_file.close();
 
     // Load Map
-    SetDrawTarget(1);
     _track.LoadFromFile("tracks/1.png");
     _track_sel = 0;
+
+    SetDrawTarget(1);
     DrawSprite({ 0, 0 }, &_track);
-    SetDrawTarget(2);
+    SetDrawTarget(uint8_t(0));
+
+    // Initalize Car
+    _car.pos    = _track_start.at(_track_sel);
+    _car.rot    = 0.0f;
+    _car.mov    = { 0.f, 0.f };
+    _car.sprite = new olc::Sprite(14, 28);    // TODO: Car Texture
+    for (int i = 0; i < 14 * 28; i++) _car.sprite->GetData()[i] = olc::RED;
 
     reset = false;
 
@@ -38,7 +47,7 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
 {
     if (reset)
     {
-        _car.pos = { WIDTH / 2, HEIGHT / 2 };
+        _car.pos = _track_start.at(_track_sel);
         _car.rot = 0.0f;
         _car.mov = { 0.f, 0.f };
 
@@ -56,7 +65,7 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
 
         SetDrawTarget(1);
         DrawSprite({ 0, 0 }, &_track);
-        SetDrawTarget(2);
+        SetDrawTarget(uint8_t(0));
 
         reset = true;
     }
@@ -68,7 +77,7 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
 
         SetDrawTarget(1);
         DrawSprite({ 0, 0 }, &_track);
-        SetDrawTarget(2);
+        SetDrawTarget(uint8_t(0));
 
         reset = true;
     }
@@ -99,6 +108,27 @@ bool Game::OnUserUpdate(float fElapsedTime)    // called once per frame
     // Move car
     _car.pos += _car.mov;
 
-    DrawRotatedDecal(_car.pos, _car.sprite.Decal(), _car.rot, { 7, 14 });    // Magic Number
+    // Render
+    Clear(olc::BLANK);
+
+    _car.transform.Reset();
+    _car.transform.Translate(-7, -14);
+    _car.transform.Rotate(-_car.rot);
+    _car.transform.Translate(_car.pos.x, _car.pos.y);
+
+    olc::GFX2D::DrawSprite(_car.sprite, _car.transform);
+
+    // Colision detection
+    for (int x = _car.pos.x - 14; x < _car.pos.x + 14; x++)    // Magic Number
+    {
+        for (int y = _car.pos.y - 14; y < _car.pos.y + 14; y++)
+            if (_track.GetPixel(x, y) == olc::BLACK && GetDrawTarget()->GetPixel(x, y) == olc::RED)
+            {
+                reset = true;
+                break;
+            }
+        if (reset) break;
+    }
+
     return true;
 }
